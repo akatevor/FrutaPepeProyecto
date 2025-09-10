@@ -363,3 +363,4 @@ C:\xampp\htdocs\FrutasPepe\APP\obj\Debug\net9.0\compressed\xvxou9flk8-ilo7uva0vt
 C:\xampp\htdocs\FrutasPepe\APP\obj\Debug\net9.0\compressed\qa15wwt811-qlccset4i1.gz
 C:\xampp\htdocs\FrutasPepe\APP\obj\Debug\net9.0\compressed\ovqednlb2v-xzw0cte36n.gz
 C:\xampp\htdocs\FrutasPepe\APP\obj\Debug\net9.0\compressed\97ox7ow9t2-jfsiqqwiad.gz
+C:\xampp\htdocs\FrutasPepe\APP\obj\Debug\net9.0\APP.sourcelink.json
