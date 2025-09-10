@@ -1,0 +1,95 @@
+@model APP.Models.Fruta
+
+<div class="container mt-5">
+    <div class="row">
+        <!-- Imagen -->
+        <div class="col-md-6 text-center mb-4">
+            <img src="@Model.Imagen"
+                 class="img-fluid rounded shadow"
+                 alt="@Model.Nombre"
+                 style="max-height:350px; object-fit:cover;" />
+        </div>
+
+        <!-- Detalles -->
+        <div class="col-md-6">
+            <h2 class="mb-3">@Model.Nombre</h2>
+            <ul class="list-group mb-3">
+                <li class="list-group-item"><strong>Tipo:</strong> @Model.Tipo</li>
+                <li class="list-group-item"><strong>Color:</strong> @Model.Color</li>
+                <li class="list-group-item"><strong>Tropical:</strong> @(Model.EsTropical ? "Sí" : "No")</li>
+                <li class="list-group-item"><strong>Precio:</strong> @Model.Precio.ToString("C")</li>
+
+                @if (Model.Proveedor != null)
+                {
+                    <li class="list-group-item"><strong>Proveedor:</strong> @Model.Proveedor.Nombre</li>
+                    <li class="list-group-item"><strong>Dirección:</strong> @Model.Proveedor.Direccion</li>
+                    <li class="list-group-item"><strong>Teléfono:</strong> @Model.Proveedor.Telefono</li>
+                    <li class="list-group-item"><strong>Email:</strong> @Model.Proveedor.Email</li>
+                }
+            </ul>
+
+            <a asp-controller="Fruta"
+               asp-action="Index"
+               class="btn btn-secondary mb-2">
+                Volver a la lista
+            </a>
+
+            @{
+                var rolUsuario = Context.Session.GetString("Rol");
+            }
+
+            <div class="d-flex gap-2 mb-2">
+                @if (rolUsuario == "ADMIN" || rolUsuario == "ENCARGADO")
+                {
+                    <a asp-controller="Fruta"
+                       asp-action="Edit"
+                       asp-route-id="@Model.IdFruta"
+                       class="btn btn-warning flex-grow-1">
+                        Editar
+                    </a>
+                }
+                @if (rolUsuario == "ADMIN")
+                {
+                    <a asp-controller="Fruta"
+                       asp-action="Delete"
+                       asp-route-id="@Model.IdFruta"
+                       class="btn btn-danger flex-grow-1">
+                        Borrar
+                    </a>
+                }
+            </div>
+
+            @if (rolUsuario == "ADMIN" || rolUsuario == "ENCARGADO")
+            {
+                <a asp-controller="FrutaExport"
+                   asp-action="ExportSingleFrutaToExcel"
+                   asp-route-id="@Model.IdFruta"
+                   class="btn btn-success">
+                    Exportar a Excel
+                </a>
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+    h2 {
+        font-weight: bold;
+    }
+
+    .list-group-item {
+        font-size: 1rem;
+    }
+
+    .btn-secondary,
+    .btn-warning,
+    .btn-danger,
+    .btn-success {
+        padding: 10px;
+        font-size: 1rem;
+    }
+
+    .d-flex.gap-2 {
+        margin-top: 10px;
+    }
+</style>
