@@ -6,9 +6,9 @@ const PublicRoute = ({ children }) => {
   const { isAuthenticated } = useAuth();
   const location = useLocation();
 
-  // Permitir acceso siempre a /login y /registro
-  if (isAuthenticated && !["/login", "/registro"].includes(location.pathname)) {
-    return <Navigate to="/user" replace />;
+  // Si está autenticado y está en /login o /registro, redirige a /user
+  if (isAuthenticated && ["/login", "/registro"].includes(location.pathname)) {
+    return <Navigate to="/frutas" replace />;
   }
 
   return children;

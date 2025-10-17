@@ -3,7 +3,7 @@ import axios from "axios";
 // ============================
 // URL base del backend ASP.NET MVC
 // ============================
-const API_URL = "http://localhost:5157/api/usuario";
+const API_URL = "http://localhost:5157/api/registroapi";
 
 // ============================
 // Función: Registrar usuario

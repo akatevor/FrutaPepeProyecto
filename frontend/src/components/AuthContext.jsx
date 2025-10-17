@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { getCurrentUser, getToken, logout, validateSession } from "../api/auth";
+import { getCurrentUser, getToken, logout, validateSession, login } from "../api/auth";
 
 const AuthContext = createContext();
 
@@ -21,7 +21,6 @@ export const AuthProvider = ({ children }) => {
           setUser(currentUser);
           setUserRole(currentUser.rol || currentUser.role || "EMPLEADO");
         } else {
-          // Solo asignamos valores por defecto, no redirigimos ni cerramos sesión automáticamente
           setUser(null);
           setUserRole("EMPLEADO");
           setIsAuthenticated(false);
@@ -32,9 +31,31 @@ export const AuthProvider = ({ children }) => {
         setUserRole("EMPLEADO");
       }
     };
-
     checkAuth();
   }, []);
+
+  // Función para login que actualiza el estado correctamente
+  const handleLogin = async (username, password) => {
+    try {
+      const result = await login(username, password);
+      if (result.token && result.user) {
+        setUser(result.user);
+        setIsAuthenticated(true);
+        setUserRole(result.user.rol || result.user.role || "EMPLEADO");
+        return { success: true };
+      } else {
+        setIsAuthenticated(false);
+        setUser(null);
+        setUserRole("EMPLEADO");
+        return { success: false, message: "Credenciales inválidas" };
+      }
+    } catch (error) {
+      setIsAuthenticated(false);
+      setUser(null);
+      setUserRole("EMPLEADO");
+      return { success: false, message: error.message || "Error al iniciar sesión" };
+    }
+  };
 
   const handleLogout = () => {
     logout();
@@ -44,7 +65,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, userRole, isAuthenticated, setUser, handleLogout }}>
+    <AuthContext.Provider value={{ user, userRole, isAuthenticated, setUser, handleLogout, handleLogin }}>
       {children}
     </AuthContext.Provider>
   );

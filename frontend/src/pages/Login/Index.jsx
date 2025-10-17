@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { login } from '../../api/auth';
+import { useAuth } from '../../components/AuthContext';
 import './Index.css';
 
 export default function LoginIndex() {
     const navigate = useNavigate();
+    const { handleLogin } = useAuth();
 
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -14,18 +15,11 @@ export default function LoginIndex() {
         e.preventDefault();
         setError('');
 
-        try {
-            // Llamada a tu API de login
-            const data = await login(username, password);
-
-            // Guardar info de sesión localmente
-            localStorage.setItem('rol', data.rol);
-            localStorage.setItem('username', data.username);
-
-            // Redirigir a página de Frutas
+        const result = await handleLogin(username, password);
+        if (result.success) {
             navigate('/frutas');
-        } catch (err) {
-            setError(err.error || 'Error desconocido');
+        } else {
+            setError(result.message || 'Error desconocido');
         }
     };
 

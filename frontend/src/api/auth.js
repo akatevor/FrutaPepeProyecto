@@ -7,7 +7,7 @@ const API_URL = "http://localhost:5157/api/loginapi"; // <-- usar HTTP en desarr
 export const login = async (username, password) => {
   try {
     console.log(`[auth.js] Intentando login para usuario: ${username}`);
-    const response = await axios.post(`${API_URL}/login`, { username, password });
+  const response = await axios.post(`${API_URL}/login`, { username, password });
 
     if (response.data.token) {
       localStorage.setItem("token", response.data.token);

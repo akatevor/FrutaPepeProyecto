@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getProveedores } from '../../api/frutas';
-import { createFruta } from '../../api/frutas';
+import { getProveedores } from '../../api/Frutas';
+import { createFruta } from '../../api/Frutas';
 import './Create.css';
 
 export default function CreateFruta() {
