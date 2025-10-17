@@ -1,7 +1,7 @@
 // frontend/src/api/Frutas.js
 import { getToken } from "./auth";
 
-const API_URL = "http://localhost:5157/api/FrutaApi";
+const API_URL = "http://localhost:5157/api/frutas";
 
 // --- SafeFetch con logging y detección de HTML ---
 async function safeFetch(url, options = {}) {

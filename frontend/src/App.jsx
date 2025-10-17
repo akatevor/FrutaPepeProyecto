@@ -7,7 +7,7 @@ import HomeIndex from "./pages/Home/Index";
 import Login from "./pages/Login/Index";
 import Registro from "./pages/Registro/Index";
 import UserIndex from "./pages/User/Index";
-import FrutaIndex from "./pages/FrutaS/Index";
+import FrutaIndex from "./pages/Frutas/Index";
 
 import Header from "./components/Header";
 import Footer from "./components/Footer";

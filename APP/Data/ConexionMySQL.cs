@@ -11,7 +11,7 @@ namespace APP.Data
 
         public ConexionMySql()
         {
-            connectionString = "Server=localhost;Database=FrutasPepeBD;User ID=root;Password=pepe;Port=3306;SslMode=Preferred;";
+            connectionString = "Server=localhost;Database=FrutasPepeBD;User ID=root;Password=123qwe;Port=3306;SslMode=Preferred;";
         }
 
         public MySqlConnection GetConnection() => new MySqlConnection(connectionString);
