@@ -11,26 +11,49 @@ async function safeFetch(url, options = {}) {
   try {
     const response = await fetch(url, options);
     let body = null;
+    let rawText = null;
+
+    // Log all response headers
+    console.group("[safeFetch] Response headers");
+    for (const pair of response.headers.entries()) {
+      console.log(pair[0] + ":", pair[1]);
+    }
+    console.groupEnd();
 
     const contentType = response.headers.get("content-type") || "";
     console.log("[safeFetch] Content-Type:", contentType);
 
-    if (contentType.includes("application/json")) {
-      body = await response.json();
-    } else if (contentType.includes("text/html")) {
-      body = await response.text();
-      console.warn("[safeFetch] Atención: respuesta HTML recibida (posible login):", body);
-    } else {
-      body = await response.text();
+    try {
+      rawText = await response.text();
+      // Try to parse JSON safely
+      if (contentType.includes("application/json")) {
+        try {
+          body = JSON.parse(rawText);
+        } catch (parseErr) {
+          console.warn("[safeFetch] Error parsing JSON, rawText will be attached:", parseErr);
+          body = null;
+        }
+      } else if (contentType.includes("text/html")) {
+        console.warn("[safeFetch] Atención: respuesta HTML recibida (posible login)");
+        body = rawText;
+      } else {
+        body = rawText;
+      }
+    } catch (readErr) {
+      console.error("[safeFetch] Error leyendo body como texto:", readErr);
     }
 
     console.log("[safeFetch] Response status:", response.status);
-    console.log("[safeFetch] Body:", body);
+    console.log("[safeFetch] Raw text:", rawText);
+    console.log("[safeFetch] Parsed body:", body);
 
-    return { response, body };
+    // Attach rawText to body for callers to inspect if needed
+    if (body && typeof body === "object") body._rawText = rawText;
+
+    return { response, body, rawText };
   } catch (err) {
     console.error("[safeFetch] Error en fetch:", err);
-    return { response: null, body: null, error: err };
+    return { response: null, body: null, rawText: null, error: err };
   } finally {
     console.groupEnd();
   }

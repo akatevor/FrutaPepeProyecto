@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 [ApiController]
 [Route("api/frutas")]
-[AuthorizeSession("ADMIN", "ENCARGADO", "EMPLEADO")]
+[Microsoft.AspNetCore.Authorization.AllowAnonymous]
 public class FrutaApiController : ControllerBase
 {
     private readonly ConexionMySql _db;

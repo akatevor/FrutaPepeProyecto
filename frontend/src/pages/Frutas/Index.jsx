@@ -16,8 +16,52 @@ export default function FrutaIndex() {
             try {
                 console.log('[FrutaIndex] Llamando a getFrutas...');
                 const data = await getFrutas();
-                console.log('[FrutaIndex] Datos recibidos:', data);
-                setFrutas(Array.isArray(data) ? data : []);
+                console.log('[FrutaIndex] Datos recibidos (raw):', data);
+
+                // Inspeccionar forma y normalizar campos esperados
+                const normalized = (Array.isArray(data) ? data : []).map((f, i) => {
+                    // Log keys for first few items to help debugging
+                    if (i < 3) console.log(`[FrutaIndex] item[${i}] keys:`, Object.keys(f || {}));
+
+                        // Backend base URL for images (adjust if backend runs on different host/port)
+                        const BACKEND_ORIGIN = 'http://localhost:5157';
+
+                        // Resolve image URL: if backend returns just a filename or relative path,
+                        // prefix it with the backend origin so the browser can fetch it.
+                        let imagenRaw = f?.imagen ?? f?.Imagen ?? f?.imagenUrl ?? '';
+                        let imagenUrl = '';
+                        if (imagenRaw) {
+                            // If it's already absolute (http/https), use as-is
+                            if (/^https?:\/\//i.test(imagenRaw)) {
+                                imagenUrl = imagenRaw;
+                            } else if (imagenRaw.startsWith('/')) {
+                                // Absolute path on backend
+                                imagenUrl = `${BACKEND_ORIGIN}${imagenRaw}`;
+                            } else {
+                                // Filename or relative path stored in DB
+                                imagenUrl = `${BACKEND_ORIGIN}/${imagenRaw}`;
+                            }
+                        }
+
+                        return {
+                            idFruta: f?.idFruta ?? f?.IdFruta ?? f?.id ?? null,
+                            nombre: f?.nombre ?? f?.Nombre ?? f?.nombreCompleto ?? '',
+                            tipo: f?.tipo ?? f?.Tipo ?? '',
+                            color: f?.color ?? f?.Color ?? '',
+                            esTropical: f?.esTropical ?? f?.EsTropical ?? false,
+                            imagen: imagenUrl || '/placeholder.png',
+                            precio: (() => {
+                                const p = f?.precio ?? f?.Precio ?? f?.price ?? null;
+                                const n = typeof p === 'string' ? parseFloat(p.replace(/[^0-9.-]+/g, '')) : p;
+                                return Number.isFinite(n) ? n : null;
+                            })(),
+                            proveedor: f?.proveedor ?? f?.Proveedor ?? null,
+                            raw: f,
+                        };
+                });
+
+                console.log('[FrutaIndex] Datos normalizados (primeros 5):', normalized.slice(0, 5));
+                setFrutas(normalized);
             } catch (err) {
                 console.error('[FrutaIndex] Error cargando frutas:', err);
                 setError('Error cargando frutas desde el servidor.');
@@ -84,6 +128,7 @@ export default function FrutaIndex() {
                         <div className="card h-100 shadow-sm">
                             <img
                                 src={item?.imagen || '/placeholder.png'}
+                                crossOrigin="anonymous"
                                 className="card-img-top"
                                 alt={item?.nombre || 'Fruta'}
                                 style={{ height: '180px', objectFit: 'cover' }}
