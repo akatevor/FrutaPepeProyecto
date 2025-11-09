@@ -1,32 +1,20 @@
 using APP.Data;
-using APP.Services; // Asegúrate de tener esto si usas IExcelExportService
+using APP.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System.Text.Json;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using System;
+using System.Security.Cryptography; // <-- añadido
 
 var builder = WebApplication.CreateBuilder(args);
 
 // ================== Servicios ==================
 
 // MVC con vistas
-builder.Services.AddControllersWithViews()
-       .AddJsonOptions(options =>
-       {
-           // Emitir propiedades en camelCase para que coincidan con el frontend JS
-           options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-       });
-
-// CORS para desarrollo local (vite dev server)
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowLocalDev", policy =>
-    {
-        policy.WithOrigins("http://localhost:5173", "http://localhost:5174")
-              .AllowAnyHeader()
-              .AllowAnyMethod();
-    });
-});
+builder.Services.AddControllersWithViews();
 
 // Servicio de exportación a Excel
 builder.Services.AddScoped<IExcelExportService, ExcelExportService>();
@@ -34,10 +22,10 @@ builder.Services.AddScoped<IExcelExportService, ExcelExportService>();
 // Servicio de acceso a base de datos personalizado
 builder.Services.AddScoped<ConexionMySql>();
 
-// Acceso al contexto HTTP (útil para filtros, layouts, etc.)
+// Acceso al contexto HTTP
 builder.Services.AddHttpContextAccessor();
 
-// Configuración de sesiones en memoria
+// Configuración de sesiones en memoria (puedes eliminar si solo usas JWT)
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
@@ -46,48 +34,102 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
+// ================== JWT Authentication ==================
+// Lee la clave desde configuración si existe, si no usa el valor por defecto
+var jwtKey = builder.Configuration["Jwt:Key"] ?? "r8P2y!dK9xQf#v7Lz3Tn&u6BmH5uxy1";
+
+// Derivar bytes de 32 bytes (SHA256) a partir de la cadena configurada para garantizar tamaño válido para HS256
+var signingKeyBytes = SHA256.HashData(Encoding.UTF8.GetBytes(jwtKey));
+var signingKey = new SymmetricSecurityKey(signingKeyBytes) { KeyId = "app-key" };
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.RequireHttpsMetadata = false;
+    options.SaveToken = true;
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = false,
+        ValidateAudience = false,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = signingKey,
+        ClockSkew = TimeSpan.Zero,
+        RoleClaimType = "rol" // usar el claim "rol" del JWT como rol para [Authorize(Roles=...)]
+    };
+
+    // Logs útiles en desarrollo
+    options.Events = new JwtBearerEvents
+    {
+        OnAuthenticationFailed = ctx =>
+        {
+            Console.WriteLine("[JWT] Authentication failed: " + ctx.Exception?.Message);
+            return System.Threading.Tasks.Task.CompletedTask;
+        },
+        OnTokenValidated = ctx =>
+        {
+            Console.WriteLine("[JWT] Token validated for: " + (ctx.Principal?.Identity?.Name ?? "<no-name>"));
+            return System.Threading.Tasks.Task.CompletedTask;
+        },
+        OnChallenge = context =>
+        {
+            Console.WriteLine("[JWT] OnChallenge error: " + context.Error + " desc: " + context.ErrorDescription);
+            return System.Threading.Tasks.Task.CompletedTask;
+        }
+    };
+});
+
+// ================== Authorization ==================
+builder.Services.AddAuthorization();
+
+// ================== CORS ==================
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend",
+        policy => policy
+            .WithOrigins(
+                "http://localhost:5173",
+                "https://localhost:5173",
+                "http://127.0.0.1:5173",
+                "https://127.0.0.1:5173")
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials());
+});
+
 var app = builder.Build();
 
 // ================== Middleware ==================
 
-if (!app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+}
+else
 {
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
-// Serve static files and add CORS headers for development so images can be loaded by the frontend dev server
-app.UseStaticFiles(new Microsoft.AspNetCore.Builder.StaticFileOptions
-{
-    OnPrepareResponse = ctx =>
-    {
-        // Allow the Vite dev origins (adjust as needed)
-        var origin = ctx.Context.Request.Headers["Origin"].ToString();
-        if (!string.IsNullOrEmpty(origin) && (origin == "http://localhost:5173" || origin == "http://localhost:5174"))
-        {
-            ctx.Context.Response.Headers.Append("Access-Control-Allow-Origin", origin);
-        }
-        else
-        {
-            // In development allow any origin to simplify static asset loading
-            ctx.Context.Response.Headers.Append("Access-Control-Allow-Origin", "*");
-        }
-    }
-});
+app.UseStaticFiles();
 
 app.UseRouting();
 
-// Las sesiones deben ir antes de autorización
 app.UseSession();
 
-// CORS (solo para desarrollo local)
-app.UseCors("AllowLocalDev");
+// CORS debe aplicarse antes de la autenticación para que los headers estén presentes en todas las respuestas
+app.UseCors("AllowFrontend");
 
+app.UseAuthentication();
 app.UseAuthorization();
 
-// ================== Rutas ==================
-
+// Mapear controllers y rutas MVC
+app.MapControllers();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}"

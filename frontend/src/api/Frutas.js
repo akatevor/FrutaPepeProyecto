@@ -1,265 +1,143 @@
-// frontend/src/api/Frutas.js
-import { getToken } from "./auth";
+// src/api/frutas.js
+import axios from "axios";
 
-const API_URL = "http://localhost:5157/api/frutas";
+// URL base del backend ASP.NET
+const API_URL = "http://localhost:5157/api/fruta";
 
-// --- SafeFetch con logging y detección de HTML ---
-async function safeFetch(url, options = {}) {
-  console.group(`[safeFetch] Petición a: ${url}`);
-  console.log("[safeFetch] Options:", options);
-
-  try {
-    const response = await fetch(url, options);
-    let body = null;
-    let rawText = null;
-
-    // Log all response headers
-    console.group("[safeFetch] Response headers");
-    for (const pair of response.headers.entries()) {
-      console.log(pair[0] + ":", pair[1]);
-    }
-    console.groupEnd();
-
-    const contentType = response.headers.get("content-type") || "";
-    console.log("[safeFetch] Content-Type:", contentType);
-
-    try {
-      rawText = await response.text();
-      // Try to parse JSON safely
-      if (contentType.includes("application/json")) {
-        try {
-          body = JSON.parse(rawText);
-        } catch (parseErr) {
-          console.warn("[safeFetch] Error parsing JSON, rawText will be attached:", parseErr);
-          body = null;
-        }
-      } else if (contentType.includes("text/html")) {
-        console.warn("[safeFetch] Atención: respuesta HTML recibida (posible login)");
-        body = rawText;
-      } else {
-        body = rawText;
-      }
-    } catch (readErr) {
-      console.error("[safeFetch] Error leyendo body como texto:", readErr);
-    }
-
-    console.log("[safeFetch] Response status:", response.status);
-    console.log("[safeFetch] Raw text:", rawText);
-    console.log("[safeFetch] Parsed body:", body);
-
-    // Attach rawText to body for callers to inspect if needed
-    if (body && typeof body === "object") body._rawText = rawText;
-
-    return { response, body, rawText };
-  } catch (err) {
-    console.error("[safeFetch] Error en fetch:", err);
-    return { response: null, body: null, rawText: null, error: err };
-  } finally {
-    console.groupEnd();
+// helper para normalizar errores de axios
+function formatAxiosError(err) {
+  const e = new Error(err.message || "Network error");
+  if (err.response) {
+    e.status = err.response.status;
+    e.body = err.response.data;
+    e.message =
+      (err.response.data && (err.response.data.error || err.response.data.message)) ||
+      err.message;
+  } else if (err.request) {
+    e.status = 0;
+    e.body = null;
   }
-}
-
-// --- Headers con token JWT ---
-function getAuthHeaders() {
-  const token = getToken();
-  console.log("[Frutas.js] Token obtenido:", token);
-  return {
-    "Content-Type": "application/json",
-    ...(token ? { Authorization: `Bearer ${token}` } : {}),
-  };
+  return e;
 }
 
 // --- OBTENER TODAS LAS FRUTAS ---
 export async function getFrutas() {
-  console.group("[Frutas.js] Llamada a getFrutas");
   try {
-    const { response, body, error } = await safeFetch(API_URL, {
-      method: "GET",
-      headers: getAuthHeaders(),
-    });
-
-    if (error) throw error;
-    if (!response) throw new Error("No se recibió respuesta del servidor");
-
-    const contentType = response.headers.get("content-type") || "";
-    if (contentType.includes("text/html")) {
-      throw new Error(`Respuesta HTML recibida (posible redirección a /Login). Status: ${response.status}`);
-    }
-
-    if (!response.ok) {
-      throw new Error(body?.error || body?.message || `Error al obtener frutas (status: ${response.status})`);
-    }
-
-    if (Array.isArray(body)) return body;
-    if (body?.data && Array.isArray(body.data)) return body.data;
-
-    console.warn("[Frutas.js] Respuesta inesperada:", body);
-    return [];
+    console.log("[frutas.js] Llamando a GET frutas...");
+    const resp = await axios.get(API_URL);
+    return Array.isArray(resp.data) ? resp.data : [];
   } catch (err) {
-    console.error("[Frutas.js] Excepción en getFrutas:", err);
-    throw err;
-  } finally {
-    console.groupEnd();
+    console.error("[frutas.js] Error en getFrutas:", err);
+    throw formatAxiosError(err);
   }
 }
 
-// --- OBTENER Fruta POR ID ---
+// --- OBTENER PROVEEDORES --- (extrae proveedores embebidos)
+export async function getProveedores() {
+  try {
+    console.log("[frutas.js] Extrayendo proveedores desde getFrutas...");
+    const frutas = await getFrutas();
+    if (!Array.isArray(frutas) || frutas.length === 0) return [];
+
+    const map = new Map();
+    frutas.forEach((f) => {
+      const p = f?.proveedor || f?.Proveedor || null;
+      if (!p) return;
+      const proveedor = {
+        IdProveedor: p.IdProveedor ?? p.id ?? null,
+        Nombre: p.Nombre ?? p.nombre ?? "",
+        Direccion: p.Direccion ?? p.direccion ?? "",
+        Telefono: p.Telefono ?? p.telefono ?? "",
+        Email: p.Email ?? p.email ?? "",
+        raw: p,
+      };
+      const key =
+        proveedor.IdProveedor ??
+        proveedor.Email ??
+        proveedor.Nombre ??
+        JSON.stringify(proveedor.raw);
+      if (!map.has(key)) map.set(key, proveedor);
+    });
+
+    return Array.from(map.values()).map((p) => ({
+      IdProveedor: p.IdProveedor,
+      Nombre: p.Nombre,
+      Direccion: p.Direccion,
+      Telefono: p.Telefono,
+      Email: p.Email,
+      id: p.IdProveedor,
+      nombre: p.Nombre,
+      _raw: p.raw,
+    }));
+  } catch (err) {
+    console.error("[frutas.js] Error en getProveedores:", err);
+    throw err;
+  }
+}
+
+// --- OBTENER FRUTA POR ID ---
 export async function getFruta(id) {
   if (!id) throw new Error("ID de fruta requerido");
-  console.group(`[Frutas.js] Llamada a getFruta con id: ${id}`);
+  const idNum = Number(id);
   try {
-    const { response, body, error } = await safeFetch(`${API_URL}/${id}`, {
-      method: "GET",
-      headers: getAuthHeaders(),
-    });
-
-    if (error) throw error;
-    if (!response) throw new Error("No se recibió respuesta del servidor");
-
-    const contentType = response.headers.get("content-type") || "";
-    if (contentType.includes("text/html")) {
-      throw new Error(`Respuesta HTML recibida (posible redirección a /Login). Status: ${response.status}`);
-    }
-
-    if (!response.ok) {
-      throw new Error(body?.error || body?.message || `Fruta no encontrada (status: ${response.status})`);
-    }
-
-    return body;
+    console.log("[frutas.js] Llamando a getFruta:", idNum);
+    const resp = await axios.get(`${API_URL}/${idNum}`);
+    return resp.data;
   } catch (err) {
-    console.error("[Frutas.js] Excepción en getFruta:", err);
-    throw err;
-  } finally {
-    console.groupEnd();
+    console.error("[frutas.js] Error en getFruta:", err);
+    throw formatAxiosError(err);
   }
 }
 
-// --- BUSCAR Fruta POR TÉRMINO ---
+// --- BUSCAR FRUTA POR TÉRMINO ---
 export async function searchFruta(searchTerm) {
   if (!searchTerm || searchTerm.trim() === "") return [];
-  console.group(`[Frutas.js] Llamada a searchFruta con término: "${searchTerm}"`);
   try {
-    const { response, body, error } = await safeFetch(`${API_URL}/search?searchTerm=${encodeURIComponent(searchTerm)}`, {
-      method: "GET",
-      headers: getAuthHeaders(),
-    });
-
-    if (error) throw error;
-    if (!response) throw new Error("No se recibió respuesta del servidor");
-
-    const contentType = response.headers.get("content-type") || "";
-    if (contentType.includes("text/html")) {
-      throw new Error(`Respuesta HTML recibida (posible redirección a /Login). Status: ${response.status}`);
-    }
-
-    if (!response.ok) {
-      if (response.status === 404) return [];
-      throw new Error(body?.error || body?.message || `Error en la búsqueda (status: ${response.status})`);
-    }
-
-    if (Array.isArray(body)) return body;
-    if (body?.data && Array.isArray(body.data)) return body.data;
-    return [];
+    console.log("[frutas.js] Llamando a searchFruta:", searchTerm);
+    const resp = await axios.get(`${API_URL}/search`, { params: { searchTerm } });
+    return Array.isArray(resp.data) ? resp.data : [];
   } catch (err) {
-    console.error("[Frutas.js] Excepción en searchFruta:", err);
-    throw err;
-  } finally {
-    console.groupEnd();
+    console.error("[frutas.js] Error en searchFruta:", err);
+    throw formatAxiosError(err);
   }
 }
 
-// --- CREAR Fruta ---
+// --- CREAR FRUTA ---
 export async function createFruta(fruta = {}, proveedor = null) {
-  console.group("[Frutas.js] Llamada a createFruta", { fruta, proveedor });
   try {
-    const bodyContent = JSON.stringify({ Fruta: fruta, Proveedor: proveedor });
-    const { response, body, error } = await safeFetch(API_URL, {
-      method: "POST",
-      headers: getAuthHeaders(),
-      body: bodyContent,
-    });
-
-    if (error) throw error;
-    if (!response) throw new Error("No se recibió respuesta del servidor");
-
-    const contentType = response.headers.get("content-type") || "";
-    if (contentType.includes("text/html")) {
-      throw new Error(`Respuesta HTML recibida (posible redirección a /Login). Status: ${response.status}`);
-    }
-
-    if (!response.ok) {
-      throw new Error(body?.error || "Error al crear fruta");
-    }
-
-    return body;
+    console.log("[frutas.js] Llamando a createFruta:", { fruta, proveedor });
+    const resp = await axios.post(API_URL, { Fruta: fruta, Proveedor: proveedor });
+    return resp.data;
   } catch (err) {
-    console.error("[Frutas.js] Excepción en createFruta:", err);
-    throw err;
-  } finally {
-    console.groupEnd();
+    console.error("[frutas.js] Error en createFruta:", err);
+    throw formatAxiosError(err);
   }
 }
 
-// --- ACTUALIZAR Fruta ---
+// --- ACTUALIZAR FRUTA ---
 export async function updateFruta(id, fruta = {}, proveedor = null) {
   if (!id) throw new Error("ID de fruta requerido");
-  console.group(`[Frutas.js] Llamada a updateFruta con id: ${id}`, { fruta, proveedor });
+  const idNum = Number(id);
   try {
-    const bodyContent = JSON.stringify({ Fruta: fruta, Proveedor: proveedor });
-    const { response, body, error } = await safeFetch(`${API_URL}/${id}`, {
-      method: "PUT",
-      headers: getAuthHeaders(),
-      body: bodyContent,
-    });
-
-    if (error) throw error;
-    if (!response) throw new Error("No se recibió respuesta del servidor");
-
-    const contentType = response.headers.get("content-type") || "";
-    if (contentType.includes("text/html")) {
-      throw new Error(`Respuesta HTML recibida (posible redirección a /Login). Status: ${response.status}`);
-    }
-
-    if (!response.ok) {
-      throw new Error(body?.error || "Error al actualizar fruta");
-    }
-
-    return body;
+    console.log("[frutas.js] Llamando a updateFruta:", idNum, { fruta, proveedor });
+    const resp = await axios.put(`${API_URL}/${idNum}`, { Fruta: fruta, Proveedor: proveedor });
+    return resp.data;
   } catch (err) {
-    console.error("[Frutas.js] Excepción en updateFruta:", err);
-    throw err;
-  } finally {
-    console.groupEnd();
+    console.error("[frutas.js] Error en updateFruta:", err);
+    throw formatAxiosError(err);
   }
 }
 
-// --- ELIMINAR Fruta ---
+// --- ELIMINAR FRUTA ---
 export async function deleteFruta(id) {
   if (!id) throw new Error("ID de fruta requerido");
-  console.group(`[Frutas.js] Llamada a deleteFruta con id: ${id}`);
+  const idNum = Number(id);
   try {
-    const { response, body, error } = await safeFetch(`${API_URL}/${id}`, {
-      method: "DELETE",
-      headers: getAuthHeaders(),
-    });
-
-    if (error) throw error;
-    if (!response) throw new Error("No se recibió respuesta del servidor");
-
-    const contentType = response.headers.get("content-type") || "";
-    if (contentType.includes("text/html")) {
-      throw new Error(`Respuesta HTML recibida (posible redirección a /Login). Status: ${response.status}`);
-    }
-
-    if (!response.ok) {
-      throw new Error(body?.error || "Error al eliminar fruta");
-    }
-
+    console.log("[frutas.js] Llamando a deleteFruta:", idNum);
+    await axios.delete(`${API_URL}/${idNum}`);
     return true;
   } catch (err) {
-    console.error("[Frutas.js] Excepción en deleteFruta:", err);
-    throw err;
-  } finally {
-    console.groupEnd();
+    console.error("[frutas.js] Error en deleteFruta:", err);
+    throw formatAxiosError(err);
   }
 }

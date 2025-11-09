@@ -6,8 +6,10 @@ const PublicRoute = ({ children }) => {
   const { isAuthenticated } = useAuth();
   const location = useLocation();
 
-  // Si está autenticado y está en /login o /registro, redirige a /user
-  if (isAuthenticated && ["/login", "/registro"].includes(location.pathname)) {
+  // Si el usuario está autenticado y accede a una ruta pública, redirigirle al dashboard (/user)
+  const path = location.pathname || "";
+  const isPublicPath = path.startsWith("/login") || path.startsWith("/registro");
+  if (isAuthenticated && isPublicPath) {
     return <Navigate to="/frutas" replace />;
   }
 

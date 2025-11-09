@@ -1,66 +1,58 @@
 using Microsoft.AspNetCore.Mvc;
 using APP.Data;
-using Microsoft.AspNetCore.Http;
 
 namespace APP.Controllers
 {
-    public class RegistroController : Controller
+    [Route("api/[controller]")]
+    [ApiController]
+    public class UsuarioController : ControllerBase
     {
         private readonly ConexionMySql _db;
 
-        public RegistroController(ConexionMySql db)
+        public UsuarioController(ConexionMySql db)
         {
             _db = db;
         }
 
-        [HttpGet]
-        public IActionResult Index()
+        // --- REGISTRAR USUARIO ---
+        [HttpPost("register")]
+        public IActionResult Register([FromBody] RegisterRequest request)
         {
-            var rol = HttpContext.Session.GetString("Rol");
-            if (!string.IsNullOrEmpty(rol))
-            {
-                return RedirectToAction("Index", "Fruta");
-            }
-
-            return View();
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult ComprobarRegistro(
-            string usuario, string password, string confirmarPassword,
-            string nombre, string apellido, string sexo,
-            string nivelAcademico, string institucion)
-        {
-            if (password != confirmarPassword)
-            {
-                ModelState.AddModelError("", "Error: las contraseñas no coinciden.");
-                return View("Index");
-            }
+            if (request.Password != request.ConfirmarPassword)
+                return BadRequest(new { error = "Las contraseñas no coinciden" });
 
             string rolPorDefecto = "EMPLEADO";
 
             string mensajeError;
             bool exito = _db.RegistrarUsuario(
-                usuario,
-                password,
-                nombre,
-                apellido,
-                sexo,
-                nivelAcademico,
-                institucion,
+                request.Usuario,
+                request.Password,
+                request.Nombre,
+                request.Apellido,
+                request.Sexo,
+                request.NivelAcademico,
+                request.Institucion,
                 rolPorDefecto,
                 out mensajeError
             );
 
             if (!exito)
-            {
-                ModelState.AddModelError("", mensajeError);
-                return View("Index");
-            }
+                return BadRequest(new { error = mensajeError });
 
-            TempData["Success"] = "Usuario registrado correctamente";
-            return RedirectToAction("Index", "Login");
+            return Ok(new { message = "Usuario registrado correctamente" });
         }
+    }
+
+    // DTO para registro
+    public class RegisterRequest
+    {
+        public string Usuario { get; set; }
+        public string Password { get; set; }
+        public string ConfirmarPassword { get; set; }
+        public string Nombre { get; set; }
+        public string Apellido { get; set; }
+        public string Sexo { get; set; }
+        public string NivelAcademico { get; set; }
+        public string Institucion { get; set; }
     }
 }

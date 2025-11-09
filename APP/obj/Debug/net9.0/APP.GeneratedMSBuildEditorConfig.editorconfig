@@ -9,89 +9,93 @@ build_property.EnforceExtendedAnalyzerRules =
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = APP
 build_property.RootNamespace = APP
-build_property.ProjectDir = /home/luis/FrutaPepeProyecto/APP/
+build_property.ProjectDir = C:\xampp\htdocs\FrutasPepe\APP\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
 build_property.RazorLangVersion = 9.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
-build_property.MSBuildProjectDirectory = /home/luis/FrutaPepeProyecto/APP
+build_property.MSBuildProjectDirectory = C:\xampp\htdocs\FrutasPepe\APP
 build_property._RazorSourceGeneratorDebug = 
 build_property.EffectiveAnalysisLevelStyle = 9.0
 build_property.EnableCodeStyleSeverity = 
 
-[/home/luis/FrutaPepeProyecto/APP/Views/Fruta/Create.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3MvRnJ1dGEvQ3JlYXRlLmNzaHRtbA==
+[C:/xampp/htdocs/FrutasPepe/APP/Views/Fruta/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRnJ1dGFcQ3JlYXRlLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[/home/luis/FrutaPepeProyecto/APP/Views/Fruta/Details.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3MvRnJ1dGEvRGV0YWlscy5jc2h0bWw=
+[C:/xampp/htdocs/FrutasPepe/APP/Views/Fruta/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRnJ1dGFcRGV0YWlscy5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[/home/luis/FrutaPepeProyecto/APP/Views/Fruta/Edit.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3MvRnJ1dGEvRWRpdC5jc2h0bWw=
+[C:/xampp/htdocs/FrutasPepe/APP/Views/Fruta/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRnJ1dGFcRWRpdC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[/home/luis/FrutaPepeProyecto/APP/Views/Fruta/index.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3MvRnJ1dGEvaW5kZXguY3NodG1s
+[C:/xampp/htdocs/FrutasPepe/APP/Views/Fruta/index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRnJ1dGFcaW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[/home/luis/FrutaPepeProyecto/APP/Views/Home/Index.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3MvSG9tZS9JbmRleC5jc2h0bWw=
+[C:/xampp/htdocs/FrutasPepe/APP/Views/Home/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[/home/luis/FrutaPepeProyecto/APP/Views/Home/Privacy.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3MvSG9tZS9Qcml2YWN5LmNzaHRtbA==
+[C:/xampp/htdocs/FrutasPepe/APP/Views/Home/Privacy.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQcml2YWN5LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[/home/luis/FrutaPepeProyecto/APP/Views/Login/index.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3MvTG9naW4vaW5kZXguY3NodG1s
+[C:/xampp/htdocs/FrutasPepe/APP/Views/Login/index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTG9naW5caW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[/home/luis/FrutaPepeProyecto/APP/Views/Registro/index.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3MvUmVnaXN0cm8vaW5kZXguY3NodG1s
+[C:/xampp/htdocs/FrutasPepe/APP/Views/Registro/index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmVnaXN0cm9caW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[/home/luis/FrutaPepeProyecto/APP/Views/Shared/Error.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL0Vycm9yLmNzaHRtbA==
+[C:/xampp/htdocs/FrutasPepe/APP/Views/Shared/Error.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXEVycm9yLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[/home/luis/FrutaPepeProyecto/APP/Views/Shared/_layoutFrutas.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL19sYXlvdXRGcnV0YXMuY3NodG1s
+[C:/xampp/htdocs/FrutasPepe/APP/Views/Shared/_layoutFrutas.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9sYXlvdXRGcnV0YXMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[/home/luis/FrutaPepeProyecto/APP/Views/Shared/_ValidationScriptsPartial.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL19WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
+[C:/xampp/htdocs/FrutasPepe/APP/Views/Shared/_layoutNEO.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9sYXlvdXRORU8uY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[/home/luis/FrutaPepeProyecto/APP/Views/User/Create.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3MvVXNlci9DcmVhdGUuY3NodG1s
+[C:/xampp/htdocs/FrutasPepe/APP/Views/Shared/_ValidationScriptsPartial.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[/home/luis/FrutaPepeProyecto/APP/Views/User/Details.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3MvVXNlci9EZXRhaWxzLmNzaHRtbA==
+[C:/xampp/htdocs/FrutasPepe/APP/Views/User/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXNlclxDcmVhdGUuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[/home/luis/FrutaPepeProyecto/APP/Views/User/Edit.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3MvVXNlci9FZGl0LmNzaHRtbA==
+[C:/xampp/htdocs/FrutasPepe/APP/Views/User/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXNlclxEZXRhaWxzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[/home/luis/FrutaPepeProyecto/APP/Views/User/index.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3MvVXNlci9pbmRleC5jc2h0bWw=
+[C:/xampp/htdocs/FrutasPepe/APP/Views/User/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXNlclxFZGl0LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[/home/luis/FrutaPepeProyecto/APP/Views/User/Main.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3MvVXNlci9NYWluLmNzaHRtbA==
+[C:/xampp/htdocs/FrutasPepe/APP/Views/User/index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXNlclxpbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[/home/luis/FrutaPepeProyecto/APP/Views/_ViewImports.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3MvX1ZpZXdJbXBvcnRzLmNzaHRtbA==
+[C:/xampp/htdocs/FrutasPepe/APP/Views/User/Main.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXNlclxNYWluLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[/home/luis/FrutaPepeProyecto/APP/Views/_ViewStart.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3MvX1ZpZXdTdGFydC5jc2h0bWw=
+[C:/xampp/htdocs/FrutasPepe/APP/Views/_ViewImports.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[/home/luis/FrutaPepeProyecto/APP/Views/Shared/_Layout.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL19MYXlvdXQuY3NodG1s
-build_metadata.AdditionalFiles.CssScope = b-pgw9zcxo0u
+[C:/xampp/htdocs/FrutasPepe/APP/Views/_ViewStart.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdTdGFydC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/xampp/htdocs/FrutasPepe/APP/Views/Shared/_Layout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9MYXlvdXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = b-sara90ikyu

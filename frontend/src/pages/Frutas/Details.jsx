@@ -1,36 +1,38 @@
+// ...existing code...
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getfruta } from '../../api/fruta';
+import { getFruta } from '../../api/frutas';
 import { useAuth } from '../../components/AuthContext';
 import './Details.css';
 
-export default function Detailsfruta() {
+export default function DetailsFruta() {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { user } = useAuth();
-    const userRole = user?.role ?? 'EMPLEADO';
+    const { userRole } = useAuth();
+    const role = (userRole || 'EMPLEADO').toUpperCase();
 
-    const [gpu, setfruta] = useState(null);
+    const [fruta, setFruta] = useState(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        async function fetchGPU() {
-            console.log("[DetailsGPU] Llamando getfruta con id:", id);
+        async function fetchFruta() {
             try {
-                const data = await getfruta(id);
-                console.log("[Detailsfruta] fruta recibida:", data);
-                setfruta(data);
+                const data = await getFruta(id);
+                setFruta(data);
             } catch (err) {
-                console.error('[Detailsfruta] Error cargando fruta:', err);
+                console.error('[DetailsFruta] Error cargando fruta:', err);
             } finally {
                 setLoading(false);
             }
         }
-        fetchGPU();
+        fetchFruta();
     }, [id]);
 
     if (loading) return <div>Cargando...</div>;
-    if (!fruta) return <div>fruta no encontrada</div>;
+    if (!fruta) return <div>Fruta no encontrada</div>;
+
+    const canEdit = role === 'ADMIN' || role === 'ENCARGADO';
+    const canDelete = role === 'ADMIN';
 
     return (
         <div className="container mt-5">
@@ -38,19 +40,18 @@ export default function Detailsfruta() {
                 <div className="col-md-6 text-center mb-4">
                     <img 
                         src={fruta.imagen || '/placeholder.png'} 
-                        alt={fruta.modelo || 'fruta'} 
+                        alt={fruta.nombre || 'Fruta'} 
                         className="img-fluid rounded shadow" 
                         style={{ maxHeight: '350px', objectFit: 'cover' }} 
                     />
                 </div>
 
                 <div className="col-md-6">
-                    <h2 className="mb-3">{fruta.modelo || 'Desconocido'}</h2>
+                    <h2 className="mb-3">{fruta.nombre || 'Desconocido'}</h2>
                     <ul className="list-group mb-3">
                         <li className="list-group-item"><strong>Tipo:</strong> {fruta.tipo || 'N/A'}</li>
-                        <li className="list-group-item"><strong>color:</strong> {fruta.color || 'N/A'}</li>
-                        <li className="list-group-item"><strong>Es tropical:</strong> {fruta.es_tropical ?? 'N/A'}</li>
-                       
+                        <li className="list-group-item"><strong>Color:</strong> {fruta.color || 'N/A'}</li>
+                        <li className="list-group-item"><strong>Peso Promedio:</strong> {fruta.pesoPromedio ?? 'N/A'} g</li>
                         <li className="list-group-item"><strong>Precio:</strong> {fruta.precio != null ? fruta.precio.toLocaleString('es-NI', { style: 'currency', currency: 'NIO' }) : 'N/A'}</li>
                         {fruta.proveedor && (
                             <>
@@ -62,27 +63,19 @@ export default function Detailsfruta() {
                         )}
                     </ul>
 
-                    <button className="btn btn-secondary mb-2" onClick={() => navigate('/fruta')}>Volver a la lista</button>
+                    <button className="btn btn-secondary mb-2" onClick={() => navigate('/frutas')}>Volver a la lista</button>
 
                     <div className="d-flex gap-2">
-                        {(userRole === 'ADMIN' || userRole === 'ENCARGADO') && (
-                            <button className="btn btn-warning flex-grow-1" onClick={() => navigate(`/fruta/edit/${fruta.idfruta}`)}>Editar</button>
+                        {canEdit && (
+                            <button className="btn btn-warning flex-grow-1" onClick={() => navigate(`/frutas/edit/${fruta.idFruta}`)}>Editar</button>
                         )}
-                        {userRole === 'ADMIN' && (
-                            <button className="btn btn-danger flex-grow-1" onClick={() => navigate(`/fruta/delete/${fruta.idfruta}`)}>Borrar</button>
+                        {canDelete && (
+                            <button className="btn btn-danger flex-grow-1" onClick={() => navigate(`/frutas/delete/${fruta.idFruta}`)}>Borrar</button>
                         )}
                     </div>
-
-                    {(userRole === 'ADMIN' || userRole === 'ENCARGADO') && (
-                        <button 
-                            className="btn btn-success flex-grow-1 mt-2"
-                            onClick={() => window.open(`/api/export/fruta/${fruta.idfruta}/excel`, '_blank')}
-                        >
-                            Exportar a Excel
-                        </button>
-                    )}
                 </div>
             </div>
         </div>
     );
 }
+// ...existing code...

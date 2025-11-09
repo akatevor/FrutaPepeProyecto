@@ -1,25 +1,31 @@
 {
   "format": 1,
   "restore": {
-    "/home/luis/FrutaPepeProyecto/APP/APP.csproj": {}
+    "C:\\xampp\\htdocs\\FrutasPepe\\APP\\APP.csproj": {}
   },
   "projects": {
-    "/home/luis/FrutaPepeProyecto/APP/APP.csproj": {
+    "C:\\xampp\\htdocs\\FrutasPepe\\APP\\APP.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/luis/FrutaPepeProyecto/APP/APP.csproj",
+        "projectUniqueName": "C:\\xampp\\htdocs\\FrutasPepe\\APP\\APP.csproj",
         "projectName": "APP",
-        "projectPath": "/home/luis/FrutaPepeProyecto/APP/APP.csproj",
-        "packagesPath": "/home/luis/.nuget/packages/",
-        "outputPath": "/home/luis/FrutaPepeProyecto/APP/obj/",
+        "projectPath": "C:\\xampp\\htdocs\\FrutasPepe\\APP\\APP.csproj",
+        "packagesPath": "C:\\Users\\kenne\\.nuget\\packages\\",
+        "outputPath": "C:\\xampp\\htdocs\\FrutasPepe\\APP\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
-          "/home/luis/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\kenne\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net9.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -38,7 +44,7 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "9.0.200"
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net9.0": {
@@ -47,6 +53,10 @@
             "ClosedXML": {
               "target": "Package",
               "version": "[0.105.0, )"
+            },
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
+              "target": "Package",
+              "version": "[9.0.9, )"
             },
             "MySql.Data": {
               "target": "Package",
@@ -72,7 +82,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/9.0.203/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.304/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
